@@ -1,25 +1,40 @@
 <?php
-ini_set('display_errors', 1);
-require_once "connection.php";
 require_once 'config.php';
+require_once "connection.php";
 
-$connection = @new mysqli($host, $db_user, $db_password, $db_name);
+ini_set('display_errors', 1);
 
-if ($connection->connect_errno!=0) {
-    echo "Error Database Connection";
-}
-else {
+$connection = new mysqli($host, $db_user, $db_password, $db_name);
+
+if ($connection->connect_errno != 0) {
+    die("Błąd połączenia z bazą danych.");
+} else {
     $discordID = $_SESSION['userData']['discord_id'];
-    $sql = "SELECT * FROM users WHERE discordID = '$discordID'";
-    
-    $discordIDcheck = $connection->query($sql);
     $discordName = $_SESSION['userData']['name'];
-    if($discordIDcheck->num_rows > 0) {
-        header("location: dashboard.php");
-    } 
-    elseif($connection->query("INSERT INTO `users`(`discordID`, `rentTime`, `discordUsername`) VALUES ('$discordID','0000-00-00 00:00:00','$discordName')"));
+
+    $stmt = $connection->prepare("SELECT id FROM users WHERE discordID = ?");
+    $stmt->bind_param("s", $discordID);
+    $stmt->execute();
     
-    $connection-> close();
+    $stmt->store_result();
+
+    if ($stmt->num_rows > 0) {
+        $stmt->close();
+        $connection->close();
+        header("location: dashboard.php");
+        exit();
+    } else {
+        $stmt->close();
+
+        $insert_stmt = $connection->prepare("INSERT INTO users (discordID, rentTime, discordUsername) VALUES (?, '0000-00-00 00:00:00', ?)");
+        $insert_stmt->bind_param("ss", $discordID, $discordName);
+        $insert_stmt->execute();
+        $insert_stmt->close();
+    }
+
+    $connection->close();
 }
+
 header("location: dashboard.php");
 exit();
+?>

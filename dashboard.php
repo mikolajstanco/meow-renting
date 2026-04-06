@@ -1,19 +1,28 @@
 <?php
-require_once 'config.php';
-    // session_start();
-
-    // if(!isset($_SESSION['logged_in'])) {
-    //     header("Location: init-oauth.php");
-    //     exit();
-    // }
-
-
-    extract($_SESSION['userData']);
-
-    $avatar_url = "https://cdn.discordapp.com/avatars/$discord_id/$avatar.jpg";
-
+    require_once 'config.php';
+    require_once "connection.php";
+    $connection = new mysqli($host, $db_user, $db_password, $db_name);
     
+    if ($connection->connect_errno != 0) {
+        die("Błąd połączenia z bazą danych."); 
+    } else {
+        $discordID = $_SESSION['userData']['discord_id'];
+        
+        $stmt = $connection->prepare("SELECT rentTime FROM users WHERE discordID = ?");
+        $stmt->bind_param("s", $discordID);
+        $stmt->execute();
+        
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
 
+        if ($row != NULL) {
+            $_SESSION['rentTime'] = $row['rentTime'];
+        } else {
+            $_SESSION['rentTime'] = '0000-00-00 00:00:00'; 
+        }
+        $stmt->close();
+        $connection->close();
+    }
 ?>
 
 <!DOCTYPE html>
@@ -51,33 +60,11 @@ require_once 'config.php';
                         </div>
                         <div class="dashboard-header">
                             <?php
-                                require_once "connection.php";
-
-                                $connection = @new mysqli($host, $db_user, $db_password, $db_name);
-                                
-                                if ($connection->connect_errno!=0) {
-                                    echo "Error Database Connection";
-                                }
-                                else {
-                                    $discordID = $_SESSION['userData']['discord_id'];
-                                    $sql = "SELECT rentTime FROM users WHERE discordID = '$discordID'";
-                                
-                                    $result = $connection->query($sql);
-
-                                    $row = $result->fetch_assoc();
-                                    if ($row != NULL) {
-                                        foreach ($row as $key => $value) {
-                                            $_SESSION[$key] = $value;
-                                        }
-                                    }
-                                    
-                                    $connection-> close();
-                                }
                                 if ($_SESSION['rentTime'] != '0000-00-00 00:00:00') {
                                     echo "<p class='actual-rent'>ACTUAL RENT END TIME: ".$_SESSION['rentTime']." </p>";
                                 }
                                 else {
-                                     echo "<p class='actual-rent'>ACTUAL RENT: -";
+                                     echo "<p class='actual-rent'>ACTUALLY NOT RENTED";
                                 }
                             ?>
                         
