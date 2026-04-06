@@ -50,12 +50,12 @@
                 <div id="plans">
                     <label class="plan">
                         <p class="plans-header">Daily</p>
-                        <p>•24/7 Support <br><br> •uSNKRS Discord Server Access <br><br> •24h uSNKRS BOT Access</p>
+                        <p>•24/7 Support <br><br> •VENDOR Discord Server Access <br><br> •24h VENDOR BOT Access</p>
                         <input type="radio" name="plan" id="radio" value="plan1" onChange="wywolajAkcje(this.value)">
                     </label>
                     <label class="plan">
                         <p class="plans-header">Weekly</p>
-                        <p>•24/7 Support <br><br> •uSNKRS Discord Server Access <br><br> •7 Days uSNKRS BOT Access</p>
+                        <p>•24/7 Support <br><br> •VENDOR Discord Server Access <br><br> •7 Days VENDOR BOT Access</p>
                         <input type="radio" name="plan" id="radio" value="plan2" onChange="wywolajAkcje(this.value)">
                     </label>
                     <label class="plan">
