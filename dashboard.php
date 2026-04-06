@@ -1,6 +1,14 @@
 <?php
     require_once 'config.php';
     require_once "connection.php";
+
+    if(!isset($_SESSION['logged_in'])) {
+        header("Location: init-oauth.php");
+        exit();
+    }
+
+    $name = $_SESSION['userData']['name'];
+    
     $connection = new mysqli($host, $db_user, $db_password, $db_name);
     
     if ($connection->connect_errno != 0) {

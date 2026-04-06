@@ -37,7 +37,7 @@
                 <a href="#contact" class="right-header">CONTACT</a>
                 <a href="#faq" class="right-header">FAQ</a>
                 <a href="#pricing" class="right-header">PRICING</a>
-                <button class="dashboard-button" onclick="location.href='init-oauth.php'" type="button">Dashboard</button>
+                <button class="dashboard-button" onclick="location.href='dashboard.php'" type="button">Dashboard</button>
             </div>
         </div>
         <div class="main">
@@ -76,13 +76,11 @@
                     ?>
                 </div>
                 <div class="rent-button-div">
-                <?php
+                    <?php
                         if (!isset($_SESSION['logged_in'])) {
-                            // echo ;
-                            echo '<a href="dashboard.php"><button class="rent-button" type="button">RENT</button></a>';
+                                echo '<a href="dashboard.php"><button class="rent-button" type="button">RENT</button></a>';
                         } else {
-                            echo '<input class="rent-button"  type="submit" onclick="validateForm()" value="RENT" />';
-                            
+                                echo '<input class="rent-button" type="submit" onclick="validateForm()" value="RENT" />';
                         }
                     ?> 
 

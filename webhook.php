@@ -23,11 +23,10 @@ try {
 if ($event->type === 'checkout.session.completed') {
     $session = $event->data->object;
 
-    if ($session->payment_status !== 'paid') {
+    if ($session->payment_status !== 'paid' && $session->payment_status !== 'no_payment_required') {
         http_response_code(400);
         exit();
     }
-
     $discordId = $session->metadata->discord_id;
     $plan      = $session->metadata->plan;
 
@@ -41,7 +40,7 @@ if ($event->type === 'checkout.session.completed') {
             $dt->modify('+7 days');
             break;
         case 'plan3':
-            $dt->modify('+1 month');
+            $dt->modify('+1 hour');
             break;
         default:
             error_log("Nieznany plan w metadata: {$plan}");
@@ -59,16 +58,28 @@ if ($event->type === 'checkout.session.completed') {
     $rentTime  = $conn->real_escape_string($rentTimeRaw);
     $discordId = $conn->real_escape_string($discordId);
 
-    $sql = "UPDATE users
-            SET rentTime = '$rentTime'
-            WHERE discordID = '$discordId'";
+    // $sql = "UPDATE users
+    //         SET rentTime = '$rentTime'
+    //         WHERE discordID = '$discordId'";
 
-    if (! $conn->query($sql)) {
-        error_log("Error updating rent time: " . $conn->error);
+    // if (! $conn->query($sql)) {
+    //     error_log("Error updating rent time: " . $conn->error);
+    //     http_response_code(500);
+    //     exit();
+    // }
+
+    // $conn->close();
+
+    $stmt = $conn->prepare("UPDATE users SET rentTime = ? WHERE discordID = ?");
+    $stmt->bind_param("ss", $rentTime, $discordId);
+    
+    if (!$stmt->execute()) {
+        error_log("Error updating rent time: " . $stmt->error);
         http_response_code(500);
         exit();
     }
-
+    
+    $stmt->close();
     $conn->close();
 }
 
