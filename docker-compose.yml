@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # KONTENER 1: Baza Danych
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  # KONTENER 2: Strona WWW
+  web:
+    build: 
+      context: .
+      dockerfile: WEB/Dockerfile
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+    env_file:
+      - .env
+
+  # KONTENER 3: Bot (Python)
+  worker:
+    build: 
+      context: .
+      dockerfile: DB_menager/Dockerfile
+    restart: always
+    depends_on:
+      - db
+    env_file:
+      - .env
+
+# Dysk, na którym baza będzie trzymać dane, żeby nie usunęły się po restarcie komputera
+volumes:
+  db_data:

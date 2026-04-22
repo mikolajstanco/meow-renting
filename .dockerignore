@@ -1,0 +1,4 @@
+.git
+.env
+WEB/vendor/
+DB_menager/__pycache__/
