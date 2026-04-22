@@ -191,7 +191,7 @@ def main():
             print(f"Awaria pętli głównej: {e}")
             
         print("Cykl zakończony. Oczekiwanie...")
-        sleep(3600)
+        sleep(60)
 
 if __name__ == "__main__":
     main()
