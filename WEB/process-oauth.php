@@ -15,7 +15,6 @@ function addUserToGuild($discord_ID, $token, $guild_ID){
     // Zaktualizowany adres API do v10
     $discord_api_url = 'https://discord.com/api/v10/guilds/' . $guild_ID . '/members/' . $discord_ID;
     
-    // TU WPISZ SWÓJ TOKEN (najlepiej z pliku konfiguracyjnego/env!)
     $bot_token = $_ENV['DISCORD_BOT_TOKEN'];
     $header = array("Authorization: Bot $bot_token", "Content-Type: application/json");
     
@@ -45,7 +44,7 @@ $payload = [
     'client_secret' => $_ENV['DISCORD_CLIENT_SECRET'],
     'grant_type' => 'authorization_code',
     'redirect_uri' => 'https://stanco.pl/process-oauth.php',
-    'scope' => 'identify guilds', 
+    'scope' => 'identify guilds guilds.join',
 ];
 
 $payload_string = http_build_query($payload);
@@ -68,17 +67,14 @@ if(!$token_response) {
 
 $token_data = json_decode($token_response, true);
 
-// POPRAWKA: Sprawdzamy, czy Discord nie zwrócił błędu (np. invalid_grant)
 if (isset($token_data['error'])) {
     die("Błąd autoryzacji (Token): " . $token_data['error_description']);
 }
 
 $access_token = $token_data['access_token'];
 
-// POBIERANIE DANYCH UŻYTKOWNIKA
 $discord_users_url = "https://discord.com/api/v10/users/@me";
 
-// POPRAWKA: Poprawny nagłówek
 $header = array(
     "Authorization: Bearer $access_token", 
     "Content-Type: application/x-www-form-urlencoded"
@@ -95,7 +91,6 @@ curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 $user_response = curl_exec($ch);
 $user_data = json_decode($user_response, true);
 
-// POPRAWKA: Sprawdzamy, czy udało się pobrać ID użytkownika
 if (!isset($user_data['id'])) {
     die("Błąd pobierania danych użytkownika: " . print_r($user_data, true));
 }
@@ -109,7 +104,6 @@ $_SESSION['userData'] = [
     'access_token' => $access_token,
 ];
 
-// Dodanie do serwera Discord
 addUserToGuild($_SESSION['userData']['discord_id'], $_SESSION['userData']['access_token'], '1107813083554005072');
 
 header("location: addtodb.php");

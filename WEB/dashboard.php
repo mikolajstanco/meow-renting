@@ -68,11 +68,14 @@
                         </div>
                         <div class="dashboard-header">
                             <?php
-                                if ($_SESSION['rentTime'] != '2000-01-01 00:00:00') {
-                                    echo "<p class='actual-rent'>ACTUAL RENT END TIME: ".$_SESSION['rentTime']." </p>";
-                                }
-                                else {
-                                     echo "<p class='actual-rent'>ACTUALLY NOT RENTED";
+                                date_default_timezone_set('Europe/Warsaw');
+                                $current_time = date('Y-m-d H:i:s');
+                                $rentTime = $_SESSION['rentTime'];
+
+                                if ($rentTime != '2000-01-01 00:00:00' && $rentTime > $current_time) {
+                                    echo "<p class='actual-rent'>ACTUAL RENT END TIME: ".$rentTime." </p>";
+                                } else {
+                                    echo "<p class='actual-rent'>ACTUALLY NOT RENTED</p>";
                                 }
                             ?>
                         
