@@ -42,16 +42,14 @@ $discord_code = $_GET['code'];
 $payload = [
     'code' => $discord_code,
     'client_id' => '1101626565554618519',
-    'client_secret' => $_ENV['DISCORD_CLIENT_SECRET'], // ZMIEN TO!
+    'client_secret' => $_ENV['DISCORD_CLIENT_SECRET'],
     'grant_type' => 'authorization_code',
-    'redirect_uri' => 'http://localhost:8888/process-oauth.php',
-    // POPRAWKA: Używaj zwykłych spacji, http_build_query samo je zakoduje
+    'redirect_uri' => 'https://stanco.pl/process-oauth.php',
     'scope' => 'identify guilds', 
 ];
 
 $payload_string = http_build_query($payload);
 
-// POPRAWKA: Nowy URL API (v10)
 $discord_token_url = "https://discord.com/api/v10/oauth2/token";
 
 $ch = curl_init();

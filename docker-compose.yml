@@ -25,6 +25,8 @@ services:
       - db
     env_file:
       - .env
+    volumes:
+      - ./.env:/var/www/html/.env
 
   # KONTENER 3: Bot (Python)
   worker:
