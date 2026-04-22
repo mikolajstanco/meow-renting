@@ -68,7 +68,7 @@
                         </div>
                         <div class="dashboard-header">
                             <?php
-                                if ($_SESSION['rentTime'] != '0000-00-00 00:00:00') {
+                                if ($_SESSION['rentTime'] != '2000-01-01 00:00:00') {
                                     echo "<p class='actual-rent'>ACTUAL RENT END TIME: ".$_SESSION['rentTime']." </p>";
                                 }
                                 else {
