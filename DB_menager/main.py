@@ -54,7 +54,7 @@ def login(oldPassword):
         'password': f'{oldPassword}',
     }
 
-    # EMULACJA: Zakomentowane requesty do nieistniejącej strony
+
     # response = session.post(f'{os.getenv("VENDOR_LINK_ORIGIN")}/login', headers=headers, data=data, timeout=10)
     # response.raise_for_status()
     print("EMULACJA: Pominięto próbę logowania do Vendora.")
@@ -73,7 +73,6 @@ def unBindUsers():
         'userkey': os.getenv("VENDOR_USERKEY"),
     }
 
-    # EMULACJA: Zakomentowane requesty do nieistniejącej strony
     # response = session.post(os.getenv("VENDOR_LINK_UNBIND_USERS"), headers=headers, data=data, timeout=10)
     # response.raise_for_status()
     print("EMULACJA: Pominięto odpinanie użytkowników na stronie Vendora.")
@@ -157,7 +156,7 @@ def dbdelete():
             success = VENDORpasswordchange()
             
             if success:
-                sendWebhook()
+                
                 header = {"Authorization": f'Bot {bot_token}', "Content-Length": "0"}
                 
                 for discordID in myresult: 
@@ -174,6 +173,7 @@ def dbdelete():
                     mycursor.execute(sql, val)
                      
                 sql_conn.commit()
+                sendWebhook()
             else:
                 print("Pominięto aktualizację bazy i ról na Discordzie, ponieważ zmiana hasła się nie powiodła.")
 
