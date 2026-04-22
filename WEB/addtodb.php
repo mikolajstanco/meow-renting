@@ -26,7 +26,7 @@ if ($connection->connect_errno != 0) {
     } else {
         $stmt->close();
 
-        $insert_stmt = $connection->prepare("INSERT INTO users (discordID, rentTime, discordUsername) VALUES (?, '0000-00-00 00:00:00', ?)");
+        $insert_stmt = $connection->prepare("INSERT INTO users (discordID, rentTime, discordUsername) VALUES (?, '2000-01-01 00:00:00', ?)");
         $insert_stmt->bind_param("ss", $discordID, $discordName);
         $insert_stmt->execute();
         $insert_stmt->close();
