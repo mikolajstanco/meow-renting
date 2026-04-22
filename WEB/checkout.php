@@ -26,12 +26,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     die('Brak danych POST.');
 }
 
-require_once __DIR__ . '/../stripe-php-master/init.php';
-// require_once 'secrets.php';
+// require_once __DIR__ . '/../stripe-php-master/init.php';
 
 \Stripe\Stripe::setApiKey($_ENV['STRIPE_SECRET_KEY']);
 
-$YOUR_DOMAIN = 'http://localhost:8888';
+$YOUR_DOMAIN = 'https://stanco.pl';
 
 $checkoutSession = \Stripe\Checkout\Session::create([
     'payment_method_types'  => ['card'],
