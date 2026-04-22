@@ -83,5 +83,23 @@ if ($event->type === 'checkout.session.completed') {
     file_put_contents(__DIR__ . '/webhook_log.txt', "-> Sukces: Baza zaktualizowana dla usera: {$discordId}, nowy czas: {$rentTimeRaw}\n", FILE_APPEND);
 }
 
+//Nadwanie rang na Serwerze DC
+
+$bot_token = $_ENV['DISCORD_BOT_TOKEN'];
+$guild_id = '1107813083554005072';
+$role_id = '1108095202918408232';
+
+$discord_api_url = "https://discord.com/api/v10/guilds/{$guild_id}/members/{$discordId}/roles/{$role_id}";
+
+$ch = curl_init($discord_api_url);
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    "Authorization: Bot {$bot_token}",
+    "Content-Length: 0"
+]);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+$response = curl_exec($ch);
+curl_close($ch);
+
 http_response_code(200);
 ?>
