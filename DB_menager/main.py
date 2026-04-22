@@ -54,8 +54,10 @@ def login(oldPassword):
         'password': f'{oldPassword}',
     }
 
-    response = session.post(f'{os.getenv("VENDOR_LINK_ORIGIN")}/login', headers=headers, data=data, timeout=10)
-    response.raise_for_status()
+    # EMULACJA: Zakomentowane requesty do nieistniejącej strony
+    # response = session.post(f'{os.getenv("VENDOR_LINK_ORIGIN")}/login', headers=headers, data=data, timeout=10)
+    # response.raise_for_status()
+    print("EMULACJA: Pominięto próbę logowania do Vendora.")
 
 def unBindUsers():
     global session
@@ -71,8 +73,10 @@ def unBindUsers():
         'userkey': os.getenv("VENDOR_USERKEY"),
     }
 
-    response = session.post(os.getenv("VENDOR_LINK_UNBIND_USERS"), headers=headers, data=data, timeout=10)
-    response.raise_for_status()
+    # EMULACJA: Zakomentowane requesty do nieistniejącej strony
+    # response = session.post(os.getenv("VENDOR_LINK_UNBIND_USERS"), headers=headers, data=data, timeout=10)
+    # response.raise_for_status()
+    print("EMULACJA: Pominięto odpinanie użytkowników na stronie Vendora.")
 
 def passwordchange():
     global session
@@ -94,8 +98,9 @@ def passwordchange():
         'password': f'{newPassword}',
     }
 
-    response = session.post(os.getenv("VENDOR_LINK_CHANGE_PASSWORD"), headers=headers, data=data, timeout=10)
-    response.raise_for_status()
+    # response = session.post(os.getenv("VENDOR_LINK_CHANGE_PASSWORD"), headers=headers, data=data, timeout=10)
+    # response.raise_for_status()
+    print("EMULACJA: Hasło wygenerowane pomyślnie. Pominięto wysyłanie go do Vendora.")
 
 def VENDORpasswordchange():
     oldPassword = toFileRead()
@@ -141,9 +146,9 @@ def dbdelete():
         mycursor = sql_conn.cursor()
 
         tz = pytz.timezone('Europe/Warsaw')
-        current_dateTimeFormatted = datetime.now(tz).strftime('%y-%m-%d %H:%M:%S')
+        current_dateTimeFormatted = datetime.now(tz).strftime('%Y-%m-%d %H:%M:%S')
 
-        mycursor.execute(f'SELECT discordID from users WHERE rentTime < "{current_dateTimeFormatted}" AND rentTime != "0000-00-00 00:00:00"')
+        mycursor.execute(f'SELECT discordID from users WHERE rentTime < "{current_dateTimeFormatted}" AND rentTime != "2000-01-01 00:00:00"')
         myresult = mycursor.fetchall()
 
         bot_token = os.getenv("DISCORD_BOT_TOKEN")
@@ -160,10 +165,11 @@ def dbdelete():
                     
                     try:
                         requests.delete(url=url, headers=header, timeout=10)
+                        print(f"Zabrano rangę dla ID: {discordID[0]}")
                     except requests.exceptions.RequestException as e:
                         print(f"Błąd usuwania roli na Discordzie dla ID {discordID[0]}: {e}")
                     
-                    sql = "UPDATE users SET rentTime = '0000-00-00 00:00:00' WHERE discordID = %s"
+                    sql = "UPDATE users SET rentTime = '2000-01-01 00:00:00' WHERE discordID = %s"
                     val = (discordID[0], )
                     mycursor.execute(sql, val)
                      
