@@ -43,7 +43,7 @@ $payload = [
     'client_id' => '1101626565554618519',
     'client_secret' => $_ENV['DISCORD_CLIENT_SECRET'],
     'grant_type' => 'authorization_code',
-    'redirect_uri' => 'https://stanco.pl/process-oauth.php',
+    'redirect_uri' => $_ENV['DISCRD_REDIRECT_URI'],
     'scope' => 'identify guilds guilds.join',
 ];
 
