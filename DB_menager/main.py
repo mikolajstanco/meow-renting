@@ -39,7 +39,7 @@ def toFileWrite():
         print(f"Błąd zapisu do pliku password.txt: {e}")
         return None
 
-def login(oldPassword): 
+def login(oldPassword, mycursor): 
     headers = {
         'authority': os.getenv("VENDOR_LINK_ORIGIN"),
         'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
@@ -57,6 +57,8 @@ def login(oldPassword):
 
     # response = session.post(f'{os.getenv("VENDOR_LINK_ORIGIN")}/login', headers=headers, data=data, timeout=10)
     # response.raise_for_status()
+
+    mycursor.execute(f"INSERT INTO Worker_Logs (Description, Status) VALUES ('EMULACJA: Pominięto próbę logowania do Vendora.', 'OK')")
     print("EMULACJA: Pominięto próbę logowania do Vendora.")
 
 def unBindUsers():
@@ -77,7 +79,7 @@ def unBindUsers():
     # response.raise_for_status()
     print("EMULACJA: Pominięto odpinanie użytkowników na stronie Vendora.")
 
-def passwordchange():
+def passwordchange(mycursor):
     global session
     newPassword = toFileWrite()
     
@@ -99,26 +101,30 @@ def passwordchange():
 
     # response = session.post(os.getenv("VENDOR_LINK_CHANGE_PASSWORD"), headers=headers, data=data, timeout=10)
     # response.raise_for_status()
+
+    mycursor.execute("INSERT INTO Worker_Logs (Description, Status) VALUES ('EMULACJA: Hasło wygenerowane pomyślnie. Pominięto wysyłanie go do Vendora', 'OK')")
     print("EMULACJA: Hasło wygenerowane pomyślnie. Pominięto wysyłanie go do Vendora.")
 
-def VENDORpasswordchange():
+def VENDORpasswordchange(mycursor):
     oldPassword = toFileRead()
     if not oldPassword:
         return False
 
     try:
-        login(oldPassword)
+        login(oldPassword, mycursor)
         unBindUsers()
-        passwordchange()
+        passwordchange(mycursor)
         return True
     except requests.exceptions.RequestException as e:
+        mycursor.execute(f"INSERT INTO Worker_Logs (Description, Status) VALUES ('Błąd połączenia z API Vendor: {e}', 'NO OK')")
         print(f"Błąd połączenia z API Vendor: {e}")
         return False
     except Exception as e:
+        mycursor.execute(f"INSERT INTO Worker_Logs (Description, Status) VALUES ('Niespodziewany błąd przy zmianie hasła: {e}', 'NO OK')")
         print(f"Niespodziewany błąd przy zmianie hasła: {e}")
         return False
 
-def sendWebhook():
+def sendWebhook(mycursor):
     try:
         newPassword = toFileRead()
         webUrl = os.getenv("DISCORD_SERVER_WEBHOOK")
@@ -130,6 +136,7 @@ def sendWebhook():
         webhook.add_embed(embed)
         webhook.execute()
     except Exception as e:
+        mycursor.execute(f"INSERT INTO Worker_Logs (Description, Status) VALUES ('Błąd wysyłania Webhooka: {e}', 'NO OK')")
         print(f"Błąd wysyłania Webhooka: {e}")
 
 def dbdelete():
@@ -153,7 +160,7 @@ def dbdelete():
         bot_token = os.getenv("DISCORD_BOT_TOKEN")
 
         if myresult:
-            success = VENDORpasswordchange()
+            success = VENDORpasswordchange(mycursor)
             
             if success:
                 
@@ -164,8 +171,16 @@ def dbdelete():
                     
                     try:
                         requests.delete(url=url, headers=header, timeout=10)
+
+                        sql_log = "INSERT INTO Worker_Logs (Description, Status) VALUES (%s, %s)"
+                        mycursor.execute(sql_log, (f"Zabrano rangę dla ID: {discordID[0]}", "OK"))
+
                         print(f"Zabrano rangę dla ID: {discordID[0]}")
                     except requests.exceptions.RequestException as e:
+
+                        sql_log = "INSERT INTO Worker_Logs (Description, Status) VALUES (%s, %s)"
+                        mycursor.execute(sql_log, (f"Błąd usuwania roli na Discordzie dla ID {discordID[0]}: {e}", "NO OK"))
+
                         print(f"Błąd usuwania roli na Discordzie dla ID {discordID[0]}: {e}")
                     
                     sql = "UPDATE users SET rentTime = '2000-01-01 00:00:00' WHERE discordID = %s"
@@ -173,8 +188,9 @@ def dbdelete():
                     mycursor.execute(sql, val)
                      
                 sql_conn.commit()
-                sendWebhook()
+                sendWebhook(mycursor)
             else:
+                mycursor.execute('INSERT INTO Worker_Logs (Description, Status) VALUES ("Pominięto aktualizację bazy i ról na Discordzie, ponieważ zmiana hasła się nie powiodła.", "NO OK")')
                 print("Pominięto aktualizację bazy i ról na Discordzie, ponieważ zmiana hasła się nie powiodła.")
 
     except mysql.connector.Error as err:

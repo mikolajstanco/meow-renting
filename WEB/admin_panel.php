@@ -37,6 +37,11 @@
     $result = $stmt->get_result();
 
 
+    $getWorkerLogs = $connection->prepare("SELECT * FROM Worker_Logs ORDER BY id DESC LIMIT 50");
+    $getWorkerLogs->execute();
+    $WorkerLogsResults = $getWorkerLogs->get_result();
+
+
 ?>
 
 <!DOCTYPE html>
@@ -81,8 +86,12 @@
         </thead>
         <tbody>
             <?php 
+            $actualRenters = 0;
 
             while ($row = $result->fetch_assoc()) { 
+                if ($row["rentTime"] != "2000-01-01 00:00:00") {
+                    $actualRenters++; 
+                }
             ?>
                 <tr>
                     <td><?php echo htmlspecialchars($row['id']); ?></td>
@@ -95,6 +104,9 @@
             ?>
         </tbody>
     </table>
+    <?php
+        echo "Actual renters: $actualRenters";
+    ?>
     <div class="form-box">
         <h3>Update rent time</h3>
         <form method="POST">
@@ -109,10 +121,38 @@
             <button type="submit">Save</button>
         </form>
     </div>
+    <div ckass="log-box">
+        <h3>Log's from worker</h3>
+<table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>DESCRIPTION</th>
+                <th>STATUS</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php 
 
+            while ($row = $WorkerLogsResults->fetch_assoc()) { 
+
+                ?>
+                
+                <tr>
+                    <td><?php echo htmlspecialchars($row['Id']); ?></td>
+                    <td><?php echo htmlspecialchars($row['Description']); ?></td>
+                    <td><?php echo htmlspecialchars($row['Status']); ?></td>
+                </tr>
+            <?php 
+            } 
+        ?>
+    </tbody>
+     </table>
+    </div>
 <?php
 
     $stmt->close();
+    $getWorkerLogs->close();
     $connection->close();
 ?>
 
