@@ -1,6 +1,6 @@
 # SaaS Rental & Access Management Platform
 
-Live check: [Meow Renting](https://stanco.pl/)
+Live check: [Meow Renting](https://mikolajstanco.pl/)
 
 An automated platform for managing time-based access to a third-party SaaS application. The system handles payments, user authentication, and uses a continuous Python background worker to autonomously rotate vendor API credentials.
 
