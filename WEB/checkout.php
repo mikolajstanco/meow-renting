@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 \Stripe\Stripe::setApiKey($_ENV['STRIPE_SECRET_KEY']);
 
-$YOUR_DOMAIN = 'https://stanco.pl';
+$YOUR_DOMAIN = 'https://mikolajstanco.pl';
 
 $checkoutSession = \Stripe\Checkout\Session::create([
     'payment_method_types'  => ['card'],
