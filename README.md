@@ -6,6 +6,8 @@ An automated platform for managing time-based access to a third-party SaaS appli
 
 *Note: The original third-party API is no longer active. The codebase has been anonymized and serves as a demonstration of API integrations, web security, and background processing.*
 
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/f8306ecf-15fe-48f0-8d6f-1aef0ceb6bc7" />
+
 ## ⚙️ Tech Stack
 **PHP 8 | Python 3 | MySQL | Stripe API | Discord API (OAuth2)**
 
